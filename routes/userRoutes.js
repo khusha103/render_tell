@@ -62,13 +62,51 @@ router.get('/', async (req, res) => {
 });
 
 
-// 🟡 POST - Add or update user with profile picture
+// // 🟡 POST - Add or update user with profile picture
+// router.post('/', upload.single('profile_picture'), async (req, res) => {
+//   const { phone_number, name } = req.body;
+//   const profile_picture_url = req.file ? `/uploads/users/${req.file.filename}` : null;
+
+//   if (!phone_number || !name || !profile_picture_url) {
+//     return res.status(400).json({ message: 'Missing required fields' });
+//   }
+
+//   try {
+//     const result = await pool.query('SELECT * FROM users WHERE phone_number = $1', [phone_number]);
+
+//     if (result.rows.length > 0) {
+//       // Update existing user
+//       await pool.query(
+//         `UPDATE users 
+//          SET name = $1, profile_picture_url = $2 
+//          WHERE phone_number = $3`,
+//         [name, profile_picture_url, phone_number]
+//       );
+//       res.status(200).json({ message: 'User updated', profile_picture_url });
+//     } else {
+//       // Insert new user
+//       await pool.query(
+//         `INSERT INTO users (phone_number, name, profile_picture_url) 
+//          VALUES ($1, $2, $3)`,
+//         [phone_number, name, profile_picture_url]
+//       );
+//       res.status(201).json({ message: 'User created', profile_picture_url });
+//     }
+//   } catch (err) {
+//     console.error('Error saving user:', err.message);
+//     res.status(500).json({ message: 'Server error' });
+//   }
+// });
+
+//will remove insert when not existed even need to add mobile number is mst from frontend side
+
+// 🟡 POST - Update user with profile picture
 router.post('/', upload.single('profile_picture'), async (req, res) => {
   const { phone_number, name } = req.body;
   const profile_picture_url = req.file ? `/uploads/users/${req.file.filename}` : null;
 
-  if (!phone_number || !name || !profile_picture_url) {
-    return res.status(400).json({ message: 'Missing required fields' });
+  if (!phone_number) {
+    return res.status(400).json({ message: 'Phone number is required' });
   }
 
   try {
@@ -78,25 +116,21 @@ router.post('/', upload.single('profile_picture'), async (req, res) => {
       // Update existing user
       await pool.query(
         `UPDATE users 
-         SET name = $1, profile_picture_url = $2 
+         SET name = COALESCE($1, name), 
+             profile_picture_url = COALESCE($2, profile_picture_url) 
          WHERE phone_number = $3`,
         [name, profile_picture_url, phone_number]
       );
-      res.status(200).json({ message: 'User updated', profile_picture_url });
+      return res.status(200).json({ message: 'User updated', profile_picture_url });
     } else {
-      // Insert new user
-      await pool.query(
-        `INSERT INTO users (phone_number, name, profile_picture_url) 
-         VALUES ($1, $2, $3)`,
-        [phone_number, name, profile_picture_url]
-      );
-      res.status(201).json({ message: 'User created', profile_picture_url });
+      return res.status(404).json({ message: 'User not found. Cannot update.' });
     }
   } catch (err) {
-    console.error('Error saving user:', err.message);
-    res.status(500).json({ message: 'Server error' });
+    console.error('Error updating user:', err.message);
+    return res.status(500).json({ message: 'Server error' });
   }
 });
+
 
 module.exports = router;
 
