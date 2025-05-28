@@ -11,26 +11,27 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('../config/db');
-const multer = require('multer');
+// const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const upload = require('../middlewares/upload'); // import upload middleware
+
 
 // Create upload directory if it doesn't exist
 const uploadDir = path.join(__dirname, '../uploads/users');
 fs.mkdirSync(uploadDir, { recursive: true });
 
 // Multer configuration
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, uploadDir),
-  filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname);
-    const filename = `user_${Date.now()}${ext}`;
-    cb(null, filename);
-  }
-});
+// const storage = multer.diskStorage({
+//   destination: (req, file, cb) => cb(null, uploadDir),
+//   filename: (req, file, cb) => {
+//     const ext = path.extname(file.originalname);
+//     const filename = `user_${Date.now()}${ext}`;
+//     cb(null, filename);
+//   }
+// });
 
-const upload = multer({ storage });
+// const upload = multer({ storage });
 
 
 // 🟢 GET all users with OTP info
