@@ -44,6 +44,8 @@ app.use('/api/chats', chatRoutes);
 // Connect socket.io logic
 setupSocket(io);
 
+
+
 (async () => {
   try {
     await pool.connect();

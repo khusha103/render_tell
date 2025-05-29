@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head><title>Socket Test</title></head>
+<body>
+  <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
+  <script>
+    const socket = io('http://localhost:5000');
+
+    // Send encrypted message to server
+    const iv = crypto.getRandomValues(new Uint8Array(16));
+    const encryptedText = '...'; // Use matching encryption logic
+
+    socket.emit('send_message', {
+      senderId: 1,
+      receiverId: 2,
+      encryptedMessage: {
+        iv: Buffer.from(iv).toString('hex'),
+        encryptedText: 'yourEncryptedTextHere'
+      }
+    });
+
+    socket.on('receive_message', (data) => {
+      console.log('Received:', data);
+    });
+  </script>
+</body>
+</html>
