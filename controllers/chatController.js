@@ -1,28 +1,26 @@
-const Chat = require('../models/Chat');
-const Message = require('../models/Message');
-const User = require('../models/User');
-
-exports.createChat = async (req, res) => {
-  const { userIds, isGroup, name } = req.body;
-  const chat = await Chat.create({ isGroup, name });
-  const users = await User.findAll({ where: { id: userIds } });
-  await chat.setUsers(users);
-  res.json(chat);
-};
-
-exports.getChats = async (req, res) => {
-  const user = await User.findByPk(req.userId);
-  const chats = await user.getChats({ include: [User] });
-  res.json(chats);
-};
+const chatModel = require('../models/ChatModel');
 
 exports.sendMessage = async (req, res) => {
-  const { chatId, content } = req.body;
-  const message = await Message.create({ content, UserId: req.userId, ChatId: chatId });
-  res.json(message);
-};
+  try {
+    const { senderId, receiverId, groupId, content, messageType, mediaUrl } = req.body;
 
-exports.getMessages = async (req, res) => {
-  const messages = await Message.findAll({ where: { ChatId: req.params.chatId } });
-  res.json(messages);
+    if (!senderId || (!receiverId && !groupId) || !content) {
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
+
+    const message = await chatModel.insertMessage({
+      senderId,
+      receiverId,
+      groupId,
+      content,
+      messageType,
+      mediaUrl
+    });
+
+    res.status(201).json({ message: 'Message sent', data: message });
+
+  } catch (error) {
+    console.error('Error sending message:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
 };
