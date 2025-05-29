@@ -59,5 +59,3 @@ setupSocket(io);
     process.exit(1);
   }
 })();
-
-
