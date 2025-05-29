@@ -4,7 +4,8 @@ const express = require('express');
 const router = express.Router();
 const crypto = require('crypto');
 const dayjs = require('dayjs');
-const pool = require('../db'); // Adjust the path based on where your pool is defined
+// const pool = require('../db'); // Adjust the path based on where your pool is defined
+const pool = require('../config/db');
 
 // Helper function to generate secure OTP
 function generateOTP() {
