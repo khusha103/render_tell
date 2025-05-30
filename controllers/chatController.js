@@ -96,3 +96,53 @@ exports.sendMessage = async (req, res) => {
   }
 };
 
+
+exports.getMessages = async (req, res) => {
+  const { user1, user2 } = req.query;
+
+  if (!user1 || !user2) {
+    return res.status(400).json({ error: 'user1 and user2 are required' });
+  }
+
+  try {
+    const result = await pool.query(
+      `
+      SELECT 
+        m.message_id,
+        m.sender_id,
+        m.receiver_id,
+        m.content,
+        m.content_hash,
+        m.initialization_vector,
+        m.auth_tag,
+        m.media_url,
+        m.message_type,
+        m.is_encrypted,
+        m.encryption_version,
+        m.timestamp,
+        m.status,
+        m.reply_to_message_id,
+        m.is_deleted,
+        m.deleted_at,
+        u1.name AS sender_name,
+        u2.name AS receiver_name
+      FROM messages m
+      LEFT JOIN users u1 ON m.sender_id = u1.user_id
+      LEFT JOIN users u2 ON m.receiver_id = u2.user_id
+      WHERE 
+        (m.sender_id = $1 AND m.receiver_id = $2)
+        OR 
+        (m.sender_id = $2 AND m.receiver_id = $1)
+      ORDER BY m.timestamp ASC
+      `,
+      [user1, user2]
+    );
+
+    res.json({ messages: result.rows });
+
+  } catch (err) {
+    console.error('Error fetching messages:', err);
+    res.status(500).json({ error: 'Failed to retrieve messages' });
+  }
+};
+
