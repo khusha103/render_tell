@@ -116,6 +116,32 @@ router.get('/profile', async (req, res) => {
   }
 });
 
+// 🟢 POST - Update public key by user_id
+router.post('/update-public-key', async (req, res) => {
+  const { user_id, public_key } = req.body;
+
+  if (!user_id || !public_key) {
+    return res.status(400).json({ message: 'user_id and public_key are required' });
+  }
+
+  try {
+    const result = await pool.query(
+      'UPDATE users SET public_key = $1, key_created_at = CURRENT_TIMESTAMP WHERE user_id = $2 RETURNING user_id',
+      [public_key, user_id]
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    return res.status(200).json({ message: 'Public key updated successfully' });
+  } catch (err) {
+    console.error('Error updating public key:', err.message);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+
 
 
 module.exports = router;
