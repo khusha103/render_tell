@@ -120,7 +120,19 @@ router.post('/verify-otp', async (req, res) => {
       ['verified', phone_number]
     );
 
-    res.status(200).json({ status: true, message: 'OTP verified successfully' });
+    const userResult = await client.query(
+      `SELECT user_id FROM users WHERE phone_number = $1`,
+      [phone_number]
+    );
+
+    const userId = userResult.rows[0]?.user_id;
+
+    res.status(200).json({
+      status: true,
+      message: 'OTP verified successfully',
+      user_id: userId,
+    });
+
   } catch (err) {
     console.error('Error verifying OTP:', err.message);
     res.status(500).json({ status: false, message: 'Internal server error' });
@@ -128,5 +140,6 @@ router.post('/verify-otp', async (req, res) => {
     client.release();
   }
 });
+
 
 module.exports = router;
