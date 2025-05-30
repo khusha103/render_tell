@@ -49,7 +49,45 @@
 // module.exports = { setupSocket };
 
 
-// socket/index.js
+// // socket/index.js
+// const chatModel = require('../models/ChatModel');
+
+// function setupSocket(io) {
+//   io.on('connection', (socket) => {
+//     console.log('User connected:', socket.id);
+
+//     socket.on('send_message', async (data) => {
+//       try {
+//         const { encryptedMessage, senderId, receiverId } = data;
+
+//         // 🛑 No decryption here — store encrypted text directly
+//         await chatModel.saveMessage({
+//           sender_id: senderId,
+//           receiver_id: receiverId,
+//           content: JSON.stringify(encryptedMessage), // Save encrypted as JSON
+//           message_type: 'text',
+//           status: 'sent'
+//         });
+
+//         // 🔁 Relay encrypted message to the intended recipient(s)
+//         io.emit('receive_message', {
+//           senderId,
+//           receiverId,
+//           encryptedMessage
+//         });
+
+//       } catch (err) {
+//         console.error('Error saving message:', err);
+//         socket.emit('error', 'Message delivery failed');
+//       }
+//     });
+//   });
+// }
+
+// module.exports = { setupSocket };
+
+
+
 const chatModel = require('../models/ChatModel');
 
 function setupSocket(io) {
@@ -58,22 +96,42 @@ function setupSocket(io) {
 
     socket.on('send_message', async (data) => {
       try {
-        const { encryptedMessage, senderId, receiverId } = data;
-
-        // 🛑 No decryption here — store encrypted text directly
-        await chatModel.saveMessage({
-          sender_id: senderId,
-          receiver_id: receiverId,
-          content: JSON.stringify(encryptedMessage), // Save encrypted as JSON
-          message_type: 'text',
-          status: 'sent'
-        });
-
-        // 🔁 Relay encrypted message to the intended recipient(s)
-        io.emit('receive_message', {
+        const {
           senderId,
           receiverId,
-          encryptedMessage
+          encryptedMessage, // { iv, encryptedText, authTag }
+          contentHash,
+          messageType = 'text',
+          groupId = null,
+          mediaUrl = null,
+          replyToMessageId = null,
+          encryptionVersion = '1.0'
+        } = data;
+
+        // Save the encrypted message to the DB
+        const savedMessage = await chatModel.saveMessage({
+          sender_id: senderId,
+          receiver_id: receiverId,
+          group_id: groupId,
+          content: encryptedMessage.encryptedText,
+          content_hash: contentHash,
+          initialization_vector: encryptedMessage.iv,
+          auth_tag: encryptedMessage.authTag,
+          media_url: mediaUrl,
+          message_type: messageType,
+          is_encrypted: true,
+          encryption_version: encryptionVersion,
+          status: 'sent',
+          reply_to_message_id: replyToMessageId
+        });
+
+        // Emit the saved message back to the client
+        io.emit('receive_message', {
+          messageId: savedMessage.message_id,
+          senderId,
+          receiverId,
+          encryptedMessage,
+          timestamp: savedMessage.timestamp
         });
 
       } catch (err) {
