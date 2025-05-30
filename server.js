@@ -9,6 +9,8 @@ const pool = require('./config/db'); // Your DB config
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const chatRoutes = require('./routes/chatRoutes');
+const adminRoutes = require('./routes/adminRoutes'); // <- your preferred name
+
 
 const { setupSocket } = require('./socket'); // import the setupSocket function
 
@@ -40,6 +42,8 @@ app.get('/api/check', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/chats', chatRoutes);
+app.use('/admin', adminRoutes);
+
 
 // Connect socket.io logic
 setupSocket(io);
