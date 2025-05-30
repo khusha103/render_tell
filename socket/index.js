@@ -89,6 +89,7 @@
 
 
 const chatModel = require('../models/ChatModel');
+const pool = require('../config/db'); // PostgreSQL pool
 
 function setupSocket(io) {
   io.on('connection', (socket) => {
@@ -98,25 +99,36 @@ function setupSocket(io) {
       try {
         const {
           senderId,
-          receiverId,
-          encryptedMessage, // { iv, encryptedText, authTag }
-          contentHash,
+          receiverPhoneNumber,
+          encryptedMessage, // { iv, encryptedText, authTag (optional) }
           messageType = 'text',
-          groupId = null,
+          contentHash = null,
           mediaUrl = null,
           replyToMessageId = null,
           encryptionVersion = '1.0'
         } = data;
 
-        // Save the encrypted message to the DB
+        // ✅ Step 1: Fetch receiver_id from phone number
+        const receiverRes = await pool.query(
+          'SELECT user_id FROM users WHERE phone_number = $1',
+          [receiverPhoneNumber]
+        );
+
+        if (receiverRes.rowCount === 0) {
+          return socket.emit('error', 'Receiver not found');
+        }
+
+        const receiverId = receiverRes.rows[0].user_id;
+
+        // ✅ Step 2: Save message
         const savedMessage = await chatModel.saveMessage({
           sender_id: senderId,
           receiver_id: receiverId,
-          group_id: groupId,
+          group_id: null,
           content: encryptedMessage.encryptedText,
           content_hash: contentHash,
           initialization_vector: encryptedMessage.iv,
-          auth_tag: encryptedMessage.authTag,
+          auth_tag: encryptedMessage.authTag || null,
           media_url: mediaUrl,
           message_type: messageType,
           is_encrypted: true,
@@ -125,7 +137,7 @@ function setupSocket(io) {
           reply_to_message_id: replyToMessageId
         });
 
-        // Emit the saved message back to the client
+        // ✅ Step 3: Emit message
         io.emit('receive_message', {
           messageId: savedMessage.message_id,
           senderId,
@@ -143,3 +155,4 @@ function setupSocket(io) {
 }
 
 module.exports = { setupSocket };
+
