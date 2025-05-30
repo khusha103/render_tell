@@ -91,6 +91,32 @@ router.post('/', upload.single('profile_picture'), async (req, res) => {
 });
 
 
+// 🟢 GET public key by user_id only
+router.get('/profile', async (req, res) => {
+  const { user_id } = req.query;
+
+  if (!user_id) {
+    return res.status(400).json({ message: 'user_id is required' });
+  }
+
+  try {
+    const result = await pool.query(
+      'SELECT public_key FROM users WHERE user_id = $1',
+      [user_id]
+    );
+
+    if (result.rows.length === 0 || !result.rows[0].public_key) {
+      return res.status(404).json({ message: 'Public key not found' });
+    }
+
+    return res.status(200).json({ publicKeyHex: result.rows[0].public_key });
+  } catch (err) {
+    console.error('Error fetching public key:', err.message);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+
 
 module.exports = router;
 
