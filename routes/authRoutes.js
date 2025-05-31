@@ -122,8 +122,8 @@ router.post('/verify-otp', async (req, res) => {
 
     await client.query(
       `UPDATE users 
-   SET status = $1, last_seen = NOW() 
-   WHERE phone_number = $2`,
+       SET status = $1, last_seen = NOW() 
+       WHERE phone_number = $2`,
       ['verified', phone_number]
     );
 
