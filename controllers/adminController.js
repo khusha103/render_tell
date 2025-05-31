@@ -58,3 +58,55 @@ exports.getAllUsers = async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
+
+
+exports.getMessagesTableView = async (req, res) => {
+  const { limit = 20, page = 1 } = req.query;
+  const offset = (page - 1) * limit;
+
+  try {
+    const query = `
+      SELECT 
+        m.message_id,
+        sender.name AS sender_name,
+        CASE 
+          WHEN m.group_id IS NOT NULL THEN g.group_name
+          ELSE recipient.name 
+        END AS recipient_name,
+        m.content,
+        m.timestamp,
+        m.status
+      FROM messages m
+      LEFT JOIN users sender ON m.sender_id = sender.user_id
+      LEFT JOIN users recipient ON m.receiver_id = recipient.user_id
+      LEFT JOIN groups g ON m.group_id = g.group_id
+      WHERE m.is_deleted = FALSE
+      ORDER BY m.timestamp DESC
+      LIMIT $1 OFFSET $2
+    `;
+
+    const result = await pool.query(query, [limit, offset]);
+
+    const formatted = result.rows.map(row => ({
+      message_id: row.message_id,
+      sender: row.sender_name || '—',
+      recipient: row.recipient_name || '—',
+      message: row.content,
+      timestamp: row.timestamp,
+      status: row.status,
+      actions: ['view', 'delete']
+    }));
+
+    res.status(200).json({
+      success: true,
+      data: formatted,
+      pagination: {
+        page: Number(page),
+        limit: Number(limit)
+      }
+    });
+  } catch (err) {
+    console.error('Error fetching messages:', err.message);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+};

@@ -10,4 +10,11 @@ router.post('/login', adminController.loginAdmin);
 // 🔒 Protected: Get all users (only for admin)
 router.get('/users', verifyToken, verifyAdmin, adminController.getAllUsers);
 
+
+//messages api
+// 📦 Get all messages (paginated) - Admin only
+router.get('/messages', verifyToken, verifyAdmin, adminController.getMessagesTableView);
+
+
+
 module.exports = router;
