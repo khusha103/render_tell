@@ -220,7 +220,8 @@ function setupSocket(io) {
           data: {
             messageId: savedMessage.message_id,
             timestamp: savedMessage.timestamp,
-            encryptedMessage: encryptedMessage
+            encryptedMessage: encryptedMessage,
+            senderId:senderId
           }
         });
 
