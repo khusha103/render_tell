@@ -152,9 +152,11 @@ router.get('/profile', async (req, res) => {
 
   try {
     const result = await pool.query(
-      'SELECT public_key FROM users WHERE user_id = $1',
+      'SELECT public_key, phone_number FROM users WHERE user_id = $1',
       [user_id]
     );
+
+    
 
     if (result.rows.length === 0 || !result.rows[0].public_key) {
       return res.status(404).json({ message: 'Public key not found' });
