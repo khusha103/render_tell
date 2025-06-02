@@ -162,7 +162,7 @@ router.get('/profile', async (req, res) => {
       return res.status(404).json({ message: 'Public key not found' });
     }
 
-    return res.status(200).json({ publicKeyHex: result.rows[0].public_key });
+    return res.status(200).json({ publicKeyHex: result.rows[0].public_key,phone_number: result.rows[0].phone_number });
   } catch (err) {
     console.error('Error fetching public key:', err.message);
     return res.status(500).json({ message: 'Internal server error' });
