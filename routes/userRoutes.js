@@ -169,8 +169,35 @@ router.post('/', upload.single('profile_picture'), async (req, res) => {
 //   }
 // });
 
-router.get('/profile', async (req, res) => {
-  const { phone_number } = req.query;
+// router.get('/profile', async (req, res) => {
+//   const { phone_number } = req.query;
+
+//   if (!phone_number) {
+//     return res.status(400).json({ message: 'phone_number is required' });
+//   }
+
+//   try {
+//     const result = await pool.query(
+//       'SELECT public_key, user_id FROM users WHERE phone_number = $1',
+//       [phone_number]
+//     );
+
+    
+
+//     if (result.rows.length === 0 || !result.rows[0].public_key) {
+//       return res.status(404).json({ message: 'Public key not found' });
+//     }
+
+//     return res.status(200).json({ publicKeyHex: result.rows[0].public_key,user_id: result.rows[0].user_id });
+//   } catch (err) {
+//     console.error('Error fetching public key:', err.message);
+//     return res.status(500).json({ message: 'Internal server error' });
+//   }
+// });
+
+
+router.post('/profile', async (req, res) => {
+  const { phone_number } = req.body;
 
   if (!phone_number) {
     return res.status(400).json({ message: 'phone_number is required' });
@@ -182,18 +209,20 @@ router.get('/profile', async (req, res) => {
       [phone_number]
     );
 
-    
-
     if (result.rows.length === 0 || !result.rows[0].public_key) {
       return res.status(404).json({ message: 'Public key not found' });
     }
 
-    return res.status(200).json({ publicKeyHex: result.rows[0].public_key,user_id: result.rows[0].user_id });
+    return res.status(200).json({ 
+      publicKeyHex: result.rows[0].public_key,
+      user_id: result.rows[0].user_id 
+    });
   } catch (err) {
     console.error('Error fetching public key:', err.message);
     return res.status(500).json({ message: 'Internal server error' });
   }
 });
+
 
 // 🟢 POST - Update public key by user_id
 router.post('/update-public-key', async (req, res) => {
