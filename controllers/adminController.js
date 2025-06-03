@@ -61,7 +61,7 @@ exports.getAllUsers = async (req, res) => {
 
 
 exports.getMessagesTableView = async (req, res) => {
-  const { limit = 20, page = 1 } = req.query;
+  const { limit = 200, page = 1 } = req.query;
   const offset = (page - 1) * limit;
 
   try {

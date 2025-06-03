@@ -221,7 +221,8 @@ function setupSocket(io) {
             messageId: savedMessage.message_id,
             timestamp: savedMessage.timestamp,
             encryptedMessage: encryptedMessage,
-            senderId:senderId
+            senderId:senderId,
+            myId:senderId,
           }
         });
 
