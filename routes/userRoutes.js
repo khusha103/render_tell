@@ -179,7 +179,7 @@ router.get('/profile', async (req, res) => {
   try {
     const result = await pool.query(
       'SELECT public_key, user_id FROM users WHERE phone_number = $1',
-      [user_id]
+      [phone_number]
     );
 
     
