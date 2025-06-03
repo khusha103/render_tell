@@ -196,7 +196,7 @@ router.post('/', upload.single('profile_picture'), async (req, res) => {
 // });
 
 
-router.post('/profile', async (req, res) => {
+router.post('/profile_by_mb', async (req, res) => {
   const { phone_number } = req.body;
 
   if (!phone_number) {
@@ -222,6 +222,34 @@ router.post('/profile', async (req, res) => {
     return res.status(500).json({ message: 'Internal server error' });
   }
 });
+
+router.post('/profile_by_userid', async (req, res) => {
+  const { user_id } = req.body;
+
+  if (!user_id) {
+    return res.status(400).json({ message: 'user_id is required' });
+  }
+
+  try {
+    const result = await pool.query(
+      'SELECT public_key, phone_number FROM users WHERE user_id = $1',
+      [user_id]
+    );
+
+    if (result.rows.length === 0 || !result.rows[0].public_key) {
+      return res.status(404).json({ message: 'Public key not found' });
+    }
+
+    return res.status(200).json({ 
+      publicKeyHex: result.rows[0].public_key,
+      phone_number: result.rows[0].phone_number 
+    });
+  } catch (err) {
+    console.error('Error fetching public key:', err.message);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 
 
 // 🟢 POST - Update public key by user_id
