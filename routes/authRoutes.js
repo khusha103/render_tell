@@ -457,32 +457,10 @@ router.post('/send-otp', async (req, res) => {
                   </svg>
                   Security Reminder
                 </h3>
-                <ul>
-                  <li>Never share this code with anyone</li>
-                  <li>TellDemm will never ask for your OTP via phone or email</li>
-                  <li>If you didn't request this code, please ignore this email</li>
-                  <li>This code is only valid for account verification</li>
-                </ul>
+              
               </div>
             </div>
-            
-            <!-- Footer Section -->
-            <div class="footer">
-              <h3>Thanks for choosing TellDemm!</h3>
-              <p>
-                We're excited to have you join our community. If you have any questions or need help, 
-                don't hesitate to reach out to our support team.
-              </p>
-              <div class="social-links">
-                <a href="#">📧 Support</a>
-                <a href="#">🌐 Website</a>
-                <a href="#">📱 Mobile App</a>
-              </div>
-              <p style="margin-top: 20px; font-size: 0.8em;">
-                © 2025 TellDemm. All rights reserved.<br>
-                This is an automated message, please do not reply to this email.
-              </p>
-            </div>
+
           </div>
         </body>
         </html>
