@@ -114,22 +114,25 @@ router.post('/send-otp', async (req, res) => {
     );
 
     if (userResult.rows.length === 0) {
+      // Insert new user if not exists
       await client.query(
         `INSERT INTO users (name, phone_number, email, status) VALUES ($1, $2, $3, $4)`,
         ['User', phone_number, email, 'pending_otp']
       );
     } else {
+      // ✅ Use user_id instead of id
       await client.query(
-        `UPDATE users SET phone_number = $1, email = $2, status = $3 WHERE id = $4`,
+        `UPDATE users SET phone_number = $1, email = $2, status = $3 WHERE user_id = $4`,
         [
           phone_number || userResult.rows[0].phone_number,
           email || userResult.rows[0].email,
           'pending_otp',
-          userResult.rows[0].id,
+          userResult.rows[0].user_id, // ✅ Correct column
         ]
       );
     }
 
+    // Insert or update OTP in otp_requests table
     await client.query(
       `INSERT INTO otp_requests (phone_number, otp_code, expires_at)
        VALUES ($1, $2, $3)
@@ -146,7 +149,7 @@ router.post('/send-otp', async (req, res) => {
 
     // ====================== SEND OTP ======================
 
-    // Example: Send OTP via SMS (commented)
+    // Example: Send OTP via SMS (currently commented)
     /*
     console.log(`Sending OTP ${otp} to ${phone_number} via SMS`);
     await sendSMSToNumber(phone_number, `Your OTP is: ${otp}`);
@@ -179,7 +182,6 @@ router.post('/send-otp', async (req, res) => {
     client.release();
   }
 });
-
 
 // ---------- Verify OTP ----------
 router.post('/verify-otp', async (req, res) => {
