@@ -449,16 +449,7 @@ router.post('/send-otp', async (req, res) => {
                 <p>This code will expire in <strong>5 minutes</strong>. Please use it immediately to complete your authentication.</p>
               </div>
               
-              <!-- Security Note -->
-              <div class="security-note">
-                <h3>
-                  <svg class="shield-icon" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M12,7C13.4,7 14.8,8.6 14.8,10.5V11.5C15.4,11.5 16,12.4 16,13V16C16,16.6 15.6,17 15,17H9C8.4,17 8,16.6 8,16V13C8,12.4 8.4,11.5 9,11.5V10.5C9,8.6 10.6,7 12,7M12,8.2C11.2,8.2 10.2,8.7 10.2,10.5V11.5H13.8V10.5C13.8,8.7 12.8,8.2 12,8.2Z"/>
-                  </svg>
-                  Security Reminder
-                </h3>
-              
-              </div>
+             
             </div>
 
           </div>
