@@ -95,7 +95,7 @@ router.post('/send-otp', async (req, res) => {
   const { phone_number, email } = req.body;
   console.log('Incoming body:', req.body);
 
-  if (!phone_number && !email) {
+  if (!phone_number || !email) {
     return res.status(400).json({ status: false, message: 'Phone number or email is required' });
   }
 
