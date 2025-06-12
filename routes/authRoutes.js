@@ -173,7 +173,7 @@ router.post('/send-otp', async (req, res) => {
             
             body {
               font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-              background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+              background: linear-gradient(135deg, #ff4757 0%, #ff3742 50%, #c44569 100%);
               padding: 20px;
               min-height: 100vh;
             }
@@ -184,11 +184,12 @@ router.post('/send-otp', async (req, res) => {
               background: #ffffff;
               border-radius: 20px;
               overflow: hidden;
-              box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+              box-shadow: 0 20px 40px rgba(255, 71, 87, 0.3);
+              border: 2px solid rgba(255, 255, 255, 0.9);
             }
             
             .header {
-              background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+              background: linear-gradient(135deg, #ff4757 0%, #ff3742 50%, #c44569 100%);
               padding: 40px 30px;
               text-align: center;
               position: relative;
@@ -231,7 +232,7 @@ router.post('/send-otp', async (req, res) => {
             }
             
             .logo p {
-              color: rgba(255,255,255,0.9);
+              color: rgba(255,255,255,0.95);
               font-size: 1.1em;
               font-weight: 300;
             }
@@ -239,22 +240,24 @@ router.post('/send-otp', async (req, res) => {
             .content {
               padding: 50px 40px;
               text-align: center;
+              background: #ffffff;
             }
             
             .welcome-text {
               font-size: 1.4em;
-              color: #333;
+              color: #2c3e50;
               margin-bottom: 30px;
               line-height: 1.6;
             }
             
             .otp-container {
-              background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+              background: linear-gradient(135deg, #ff4757 0%, #ff3742 100%);
               border-radius: 15px;
               padding: 30px;
               margin: 30px 0;
               position: relative;
               overflow: hidden;
+              box-shadow: 0 10px 30px rgba(255, 71, 87, 0.3);
             }
             
             .otp-container::before {
@@ -264,7 +267,7 @@ router.post('/send-otp', async (req, res) => {
               left: -2px;
               right: -2px;
               bottom: -2px;
-              background: linear-gradient(45deg, #667eea, #764ba2, #f093fb, #f5576c);
+              background: linear-gradient(45deg, #ff4757, #ff3742, #ffffff, #ff4757);
               border-radius: 15px;
               z-index: -1;
               animation: rotate 4s linear infinite;
@@ -284,8 +287,8 @@ router.post('/send-otp', async (req, res) => {
             }
             
             .otp-code {
-              background: rgba(255,255,255,0.95);
-              color: #333;
+              background: #ffffff;
+              color: #ff4757;
               font-size: 2.5em;
               font-weight: 700;
               padding: 20px 40px;
@@ -293,97 +296,32 @@ router.post('/send-otp', async (req, res) => {
               letter-spacing: 8px;
               display: inline-block;
               box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-              border: 3px solid rgba(255,255,255,0.3);
+              border: 3px solid rgba(255, 255, 255, 0.9);
             }
             
             .expiry-info {
-              background: #f8f9fa;
+              background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
               border-radius: 10px;
               padding: 20px;
               margin: 30px 0;
-              border-left: 4px solid #ffc107;
+              border-left: 4px solid #ff4757;
+              box-shadow: 0 4px 15px rgba(255, 71, 87, 0.1);
             }
             
             .expiry-info h3 {
-              color: #856404;
+              color: #ff4757;
               margin-bottom: 10px;
               font-size: 1.1em;
+              font-weight: 600;
             }
             
             .expiry-info p {
-              color: #6c757d;
+              color: #2c3e50;
               font-size: 0.95em;
               line-height: 1.5;
             }
             
-            .security-note {
-              background: linear-gradient(135deg, #e3f2fd 0%, #f1f8e9 100%);
-              border-radius: 10px;
-              padding: 25px;
-              margin: 30px 0;
-              text-align: left;
-            }
-            
-            .security-note h3 {
-              color: #1976d2;
-              margin-bottom: 15px;
-              font-size: 1.2em;
-              display: flex;
-              align-items: center;
-            }
-            
-            .shield-icon {
-              width: 24px;
-              height: 24px;
-              margin-right: 10px;
-            }
-            
-            .security-note ul {
-              color: #424242;
-              padding-left: 20px;
-              line-height: 1.6;
-            }
-            
-            .security-note li {
-              margin-bottom: 8px;
-            }
-            
-            .footer {
-              background: #2c3e50;
-              color: #ecf0f1;
-              padding: 30px;
-              text-align: center;
-            }
-            
-            .footer h3 {
-              margin-bottom: 15px;
-              font-size: 1.3em;
-            }
-            
-            .footer p {
-              font-size: 0.9em;
-              line-height: 1.6;
-              opacity: 0.8;
-            }
-            
-            .social-links {
-              margin-top: 20px;
-            }
-            
-            .social-links a {
-              display: inline-block;
-              margin: 0 10px;
-              padding: 10px;
-              background: rgba(255,255,255,0.1);
-              border-radius: 8px;
-              color: #ecf0f1;
-              text-decoration: none;
-              transition: background 0.3s ease;
-            }
-            
-            .social-links a:hover {
-              background: rgba(255,255,255,0.2);
-            }
+
             
             @media (max-width: 600px) {
               body {
@@ -407,6 +345,7 @@ router.post('/send-otp', async (req, res) => {
               .logo h1 {
                 font-size: 2em;
               }
+
             }
             
             .pulse {
@@ -417,6 +356,15 @@ router.post('/send-otp', async (req, res) => {
               0% { transform: scale(1); }
               50% { transform: scale(1.05); }
               100% { transform: scale(1); }
+            }
+            
+            /* Red accent elements */
+            .welcome-text strong {
+              color: #ff4757;
+            }
+            
+            .expiry-info strong {
+              color: #ff4757;
             }
           </style>
         </head>
@@ -449,9 +397,7 @@ router.post('/send-otp', async (req, res) => {
                 <p>This code will expire in <strong>5 minutes</strong>. Please use it immediately to complete your authentication.</p>
               </div>
               
-             
             </div>
-
           </div>
         </body>
         </html>
