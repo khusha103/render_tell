@@ -97,7 +97,12 @@ router.post('/send-otp', async (req, res) => {
 
   // Validate inputs
   if (!phone_number && !email) {
-    return res.status(400).json({ status: false, message: 'Phone number, email, and country code are required' });
+    return res.status(400).json({ status: false, message: 'Phone number and email are required' });
+  }
+
+   // ✅ Validate phone number format: must be 10 digits (India format, no country code)
+  if (phone_number && !/^\d{10}$/.test(phone_number)) {
+    return res.status(400).json({ status: false, message: 'Phone number must be exactly 10 digits' });
   }
 
   // Validate country code format (e.g., +1, +91, etc.)
