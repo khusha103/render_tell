@@ -96,7 +96,7 @@ router.post('/send-otp', async (req, res) => {
   console.log('Incoming body:', req.body);
 
   // Validate inputs
-  if (!phone_number || !email || !country_code) {
+  if (!phone_number && !email) {
     return res.status(400).json({ status: false, message: 'Phone number, email, and country code are required' });
   }
 
