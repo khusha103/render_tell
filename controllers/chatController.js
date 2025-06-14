@@ -96,7 +96,6 @@ exports.sendMessage = async (req, res) => {
   }
 };
 
-
 exports.getMessages = async (req, res) => {
   const { user1, user2 } = req.query;
 
@@ -139,36 +138,34 @@ exports.getMessages = async (req, res) => {
     );
 
     res.json({ messages: result.rows });
-
   } catch (err) {
     console.error('Error fetching messages:', err);
     res.status(500).json({ error: 'Failed to retrieve messages' });
   }
-
-    exports.getPrivateMessages = async (req, res) => {
-    const { user_id, other_user_id } = req.query;
-
-    // Validate required query parameters
-    if (!user_id || !other_user_id) {
-        return res.status(400).json({ error: 'Missing required query parameters: user_id, other_user_id' });
-    }
-
-    try {
-        const messages = await chatModel.getPrivateMessages(user_id, other_user_id);
-        // Parse text field if it's JSON (e.g., encrypted content or media)
-        const parsedMessages = messages.map(msg => {
-            try {
-                msg.text = JSON.parse(msg.text);
-            } catch (e) {
-                // If text isn't JSON, keep it as is
-            }
-            return msg;
-        });
-        res.status(200).json({ message: 'Private messages retrieved', data: parsedMessages });
-    } catch (err) {
-        console.error('Error in get-private-messages API:', err);
-        res.status(500).json({ error: 'Failed to retrieve private messages' });
-    }
-};
 };
 
+exports.getPrivateMessages = async (req, res) => {
+  const { user_id, other_user_id } = req.query;
+
+  // Validate required query parameters
+  if (!user_id || !other_user_id) {
+    return res.status(400).json({ error: 'Missing required query parameters: user_id, other_user_id' });
+  }
+
+  try {
+    const messages = await chatModel.getPrivateMessages(user_id, other_user_id); // Ensure chatModel is defined
+    // Parse text field if it's JSON (e.g., encrypted content or media)
+    const parsedMessages = messages.map(msg => {
+      try {
+        msg.text = JSON.parse(msg.text);
+      } catch (e) {
+        // If text isn't JSON, keep it as is
+      }
+      return msg;
+    });
+    res.status(200).json({ message: 'Private messages retrieved', data: parsedMessages });
+  } catch (err) {
+    console.error('Error in get-private-messages API:', err);
+    res.status(500).json({ error: 'Failed to retrieve private messages' });
+  }
+};
