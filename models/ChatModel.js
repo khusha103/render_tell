@@ -98,6 +98,26 @@ const chatModel = {
             console.error('Error saving message to prototype_messages:', err);
             throw err; // Rethrow to handle in the caller
         }
+    },
+
+    async getPrivateMessages(user_id, other_user_id) {
+        try {
+            const query = `
+                SELECT * FROM prototype_messages
+                WHERE type = 'private'
+                AND (
+                    (sender_id = $1 AND receiver_id = $2)
+                    OR (sender_id = $2 AND receiver_id = $1)
+                )
+                ORDER BY timestamp ASC
+            `;
+            const values = [user_id, other_user_id];
+            const result = await pool.query(query, values);
+            return result.rows;
+        } catch (err) {
+            console.error('Error retrieving private messages:', err);
+            throw err;
+        }
     }
 };
 
