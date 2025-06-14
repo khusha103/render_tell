@@ -106,9 +106,35 @@ function setupSocket(io) {
         });
 
         // Handle incoming messages
-        socket.on("messageFromUser", (data) => {
+        socket.on("messageFromUser", async (data) => {
             console.log(data);
-            // data should include: type, message, sender_id, group_id OR receiver_id
+
+        // Example data:
+        // {
+        //   type: 'private',
+        //   sender_id: '9138152160',
+        //   receiver_id: '7700075618',
+        //   text: 'hgfhdfg',
+        //   timestamp: '05:12 pm'
+        // }
+
+        // Prepare message data for saving
+        const messageData = {
+            sender_id: data.sender_id,
+            receiver_id: data.type === 'private' ? data.receiver_id : null,
+            group_id: data.type === 'group' ? data.group_id : null,
+            text: data.text,
+            type: data.type,
+            timestamp: data.timestamp
+        };
+
+        // Save the message to the PostgreSQL database
+        try {
+            const savedMessage = await chatModel.saveMessage(messageData);
+            console.log('Message saved to database:', savedMessage);
+        } catch (err) {
+            console.error('Error saving message to database:', err);
+        }
 
             if (data.type === "group") {
                 // Broadcast to everyone in the group except sender
