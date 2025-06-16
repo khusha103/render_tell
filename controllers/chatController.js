@@ -116,14 +116,7 @@ exports.getPrototypeMessages = async (req, res) => {
     const result = await pool.query(
       `
       SELECT 
-        message_id,
-        sender_id,
-        receiver_id,
-        content,
-        message_type,
-        media_url,
-        timestamp,
-        type
+        *
       FROM prototype_messages
       WHERE 
         type = 'private'
