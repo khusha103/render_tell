@@ -1,49 +1,4 @@
-// const { insertMessage } = require('../models/ChatModel');
-// const pool = require('../config/db');
-// const { encryptAES } = require('../utils/encryption');
-
-// exports.sendMessage = async (req, res) => {
-//   try {
-//     const { senderId, receiverPhoneNumber, groupId, content, messageType = 'text', mediaUrl } = req.body;
-
-//     if (!senderId || (!receiverPhoneNumber && !groupId) || !content) {
-//       return res.status(400).json({ error: 'Missing required fields' });
-//     }
-
-//     // 🔍 Lookup receiverId from phone number
-//     let receiverId = null;
-//     if (receiverPhoneNumber) {
-//       const receiverResult = await pool.query(
-//         'SELECT user_id FROM users WHERE phone_number = $1',
-//         [receiverPhoneNumber]
-//       );
-
-//       if (receiverResult.rows.length === 0) {
-//         return res.status(404).json({ error: 'Receiver not found' });
-//       }
-
-//       receiverId = receiverResult.rows[0].user_id;
-//     }
-
-//     const encryptedContent = encryptAES(content);
-
-//     const message = await insertMessage({
-//       senderId,
-//       receiverId,
-//       groupId,
-//       content: encryptedContent,
-//       messageType,
-//       mediaUrl
-//     });
-
-//     res.status(201).json({ success: true, message });
-//   } catch (error) {
-//     console.error('Error sending message:', error);
-//     res.status(500).json({ error: 'Internal server error' });
-//   }
-// };
-
-
+// chatController.js
 const { insertMessage } = require('../models/ChatModel');
 const pool = require('../config/db');
 
@@ -53,7 +8,7 @@ exports.sendMessage = async (req, res) => {
       senderId,
       receiverPhoneNumber,
       groupId,
-      encryptedMessage, // Expect this from client (already encrypted content)
+      encryptedMessage,
       messageType = 'text',
       mediaUrl
     } = req.body;
@@ -62,7 +17,6 @@ exports.sendMessage = async (req, res) => {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
-    // 🔍 Lookup receiverId from phone number
     let receiverId = null;
     if (receiverPhoneNumber) {
       const receiverResult = await pool.query(
@@ -77,7 +31,6 @@ exports.sendMessage = async (req, res) => {
       receiverId = receiverResult.rows[0].user_id;
     }
 
-    // Store encrypted content as stringified JSON (e.g., { iv, encryptedText })
     const encryptedContent = JSON.stringify(encryptedMessage);
 
     const message = await insertMessage({
@@ -95,7 +48,6 @@ exports.sendMessage = async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 };
-
 
 exports.getMessages = async (req, res) => {
   const { user1, user2 } = req.query;
@@ -139,20 +91,18 @@ exports.getMessages = async (req, res) => {
     );
 
     res.json({ messages: result.rows });
-
   } catch (err) {
     console.error('Error fetching messages:', err);
     res.status(500).json({ error: 'Failed to retrieve messages' });
   }
 };
 
+exports.getPrototypeMessages = async (req, res) => {
+  const { senderId, receiverId, limit = 50, offset = 0 } = req.body;
 
-exports.prototype_messages = async (req, res) => {
-  const { user1, user2, limit = 50, offset = 0 } = req.query;
-
-  // Validate required parameters
-  if (!user1 || !user2) {
-    return res.status(400).json({ error: 'user1 and user2 are required' });
+  // Validate required fields
+  if (!senderId || !receiverId) {
+    return res.status(400).json({ error: 'senderId and receiverId are required' });
   }
 
   // Validate limit and offset
@@ -163,25 +113,34 @@ exports.prototype_messages = async (req, res) => {
   }
 
   try {
-    const values = [user1, user2, parsedLimit, parsedOffset];
     const result = await pool.query(
       `
-      SELECT * FROM prototype_messages
-      WHERE type = 'private'
-      AND (
-        (sender_id = $1 AND receiver_id = $2)
-        OR (sender_id = $2 AND receiver_id = $1)
-      )
+      SELECT 
+        message_id,
+        sender_id,
+        receiver_id,
+        content,
+        message_type,
+        media_url,
+        timestamp,
+        type
+      FROM prototype_messages
+      WHERE 
+        type = 'private'
+        AND (
+          (sender_id = $1 AND receiver_id = $2)
+          OR 
+          (sender_id = $2 AND receiver_id = $1)
+        )
       ORDER BY timestamp ASC
       LIMIT $3 OFFSET $4
       `,
-      values
+      [senderId, receiverId, parsedLimit, parsedOffset]
     );
 
     res.json({ messages: result.rows });
   } catch (err) {
-    console.error('Error fetching messages:', err);
-    res.status(500).json({ error: 'Failed to retrieve messages' });
+    console.error('Error fetching prototype messages:', err);
+    res.status(500).json({ error: 'Failed to retrieve prototype messages' });
   }
 };
-
