@@ -146,3 +146,42 @@ exports.getMessages = async (req, res) => {
   }
 };
 
+
+exports.prototype_messages = async (req, res) => {
+  const { user1, user2, limit = 50, offset = 0 } = req.query;
+
+  // Validate required parameters
+  if (!user1 || !user2) {
+    return res.status(400).json({ error: 'user1 and user2 are required' });
+  }
+
+  // Validate limit and offset
+  const parsedLimit = parseInt(limit);
+  const parsedOffset = parseInt(offset);
+  if (isNaN(parsedLimit) || parsedLimit < 1 || isNaN(parsedOffset) || parsedOffset < 0) {
+    return res.status(400).json({ error: 'Invalid limit or offset' });
+  }
+
+  try {
+    const values = [user1, user2, parsedLimit, parsedOffset];
+    const result = await pool.query(
+      `
+      SELECT * FROM prototype_messages
+      WHERE type = 'private'
+      AND (
+        (sender_id = $1 AND receiver_id = $2)
+        OR (sender_id = $2 AND receiver_id = $1)
+      )
+      ORDER BY timestamp ASC
+      LIMIT $3 OFFSET $4
+      `,
+      values
+    );
+
+    res.json({ messages: result.rows });
+  } catch (err) {
+    console.error('Error fetching messages:', err);
+    res.status(500).json({ error: 'Failed to retrieve messages' });
+  }
+};
+
