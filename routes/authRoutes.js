@@ -95,9 +95,24 @@ router.post('/send-otp', async (req, res) => {
   const { phone_number, email } = req.body;
   console.log('Incoming body:', req.body);
 
-  // Validate inputs
-  if (!phone_number && !email) {
-    return res.status(400).json({ status: false, message: 'Phone number and email are required' });
+  // console.log("phone_number",phone_number);
+  // console.log("email",email);
+
+
+  // // Validate inputs
+  // if (!phone_number && !email) {
+  //   return res.status(400).json({ status: false, message: 'Phone number and email are required' });
+  // }
+
+  //  console.log("phone_number:", phone_number);
+  // console.log("email:", email);
+
+  // Validate inputs - both must be provided
+  if (!phone_number) {
+    return res.status(400).json({ status: false, message: 'Phone number is required' });
+  }
+  if (!email) {
+    return res.status(400).json({ status: false, message: 'Email is required' });
   }
 
    // ✅ Validate phone number format: must be 10 digits (India format, no country code)
