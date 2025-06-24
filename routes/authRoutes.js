@@ -211,14 +211,14 @@ router.post('/send-otp', async (req, res) => {
             <div class="content">
               <div class="welcome-text">
                 <strong>Welcome to TellDemm!</strong><br>
-                Your verification code for ${full_phone_number} is ready 🚀
+                Your verification code for ${full_phone_number} is ready
               </div>
               <div class="otp-container pulse">
                 <div class="otp-label">Your Verification Code</div>
                 <div class="otp-code">${otp}</div>
               </div>
               <div class="expiry-info">
-                <h3>⏰ Time Sensitive</h3>
+                <h3> Time Sensitive</h3>
                 <p>This code will expire in <strong>5 minutes</strong>. Please use it immediately to complete your authentication.</p>
               </div>
             </div>
@@ -230,7 +230,7 @@ router.post('/send-otp', async (req, res) => {
       const mailOptions = {
         from: `"TellDemm Team" <${process.env.EMAIL_USER}>`,
         to: email,
-        subject: '🔐 Your TellDemm Verification Code',
+        subject: ' Your TellDemm Verification Code',
         html: htmlTemplate,
         text: `
 Welcome to TellDemm!
